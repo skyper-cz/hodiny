@@ -6,100 +6,100 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class Operace {
-    JFrame frame = new JFrame("Je čas měřit čas");
+    JFrame fr = new JFrame("hodiny");
 
 
     JTable tabulka = new JTable(new DefaultTableModel(new String[][]{
-            {"Bertík", ""},
-            {"Žertík", ""},
-            {"Alfons", ""}
-    }, new String[]{"Vážení občané", "Časy"}));
-    JButton startOrLap = new JButton("Start");
-    JButton stopOrReset = new JButton("Reset");
+            {"Čas 1", ""},
+            {"Čas 2", ""},
+            {"Čas 3", ""},
+    }, new String[]{"Úsek", "Čas"}));
+    JButton start = new JButton("Start");
+    JButton lap = new JButton("Lap");
+    JButton stop = new JButton("Stop");
+    JButton reset = new JButton("Reset");
     JLabel timer = new JLabel("00:00:00.00");
     boolean bezi = false;
     boolean vynulovano = true;
     long timeBegin = -1;
-    int finishers = 0;
+    int cas = 0;
 
     public void aktivace() {
-        funguj();
-    }
-
-    public void funguj() {
-        frame.setSize(600, 500);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setResizable(false);
+        fr.setBounds(200, 300, 600, 600);
+        fr.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        fr.setLayout(null);
+        fr.setResizable(false);
 
 
         timer.setBounds(20, 270, 560, 150);
-        timer.setFont(new Font("Ms Sans Serif Regular", Font.PLAIN, 100));
-        prepare(timer);
+        fr.add(timer);
 
-        startOrLap.setBounds(100, 425, 175, 25);
-        startOrLap.addActionListener(this::clickityClickIsThatADick);
-        prepare(startOrLap);
+        start.setBounds(100, 425, 175, 25);
+        start.addActionListener(this::startButton);
+        fr.add(start);
 
-        stopOrReset.setBounds(300, 425, 175, 25);
-        stopOrReset.addActionListener(this::clickityClickIsThatADick);
-        stopOrReset.setEnabled(false);
-        prepare(stopOrReset);
+        lap.setBounds(100, 460, 175, 25);
+        lap.addActionListener(this::lapButton);
+        fr.add(lap);
+
+        stop.setBounds(300, 425, 175, 25);
+        stop.addActionListener(this::stopButton);
+        fr.add(stop);
+
+        reset.setBounds(300, 460, 175, 25);
+        reset.addActionListener(this::resetButton);
+        fr.add(reset);
 
         tabulka.setBounds(20, 30, 544, 228);
         tabulka.setDefaultRenderer(Object.class, new Sloupec());
         tabulka.setBorder(new LineBorder(new Color(0, 0, 0), 2));
         tabulka.setRowHeight(76);
-        prepare(tabulka);
+        fr.add(tabulka);
 
-        frame.setVisible(true);
+        fr.setVisible(true);
     }
 
+    public void startButton(ActionEvent e){
+        
 
-    public void clickityClickIsThatADick(ActionEvent e) {
-        Object source = e.getSource();
-        if (startOrLap.equals(source) && startOrLap.isEnabled()) {
-            if (!bezi) {
-                timeBegin = System.currentTimeMillis();
-                startOrLap.setText("Lap");
-                stopOrReset.setText("Stop");
-                stopOrReset.setEnabled(true);
-                bezi = true;
-                vynulovano = false;
-                setTimer();
-            } else {
-                tabulka.setValueAt(getTime(), finishers++, 1);
-                if (finishers == 3) {
-                    bezi = false;
-                    startOrLap.setEnabled(false);
-                    stopOrReset.setText("Reset");
-                    timer.setText(tabulka.getValueAt(finishers - 1, 1).toString());
-                }
-            }
-        } else if (stopOrReset.equals(source)) {
-            if (bezi) {
+        if (!bezi) {
+            timeBegin = System.currentTimeMillis();
+            bezi = true;
+            vynulovano = false;
+            setTimer();
+        } 
+    }
+    public void lapButton(ActionEvent e){
+
+        if (bezi) {
+            tabulka.setValueAt(getTime(), cas++, 1);
+            if (cas == 3) {
                 bezi = false;
-                startOrLap.setEnabled(false);
-                stopOrReset.setText("Reset");
-                timer.setText(tabulka.getValueAt(finishers - 1, 1).toString());
-            } else if (!vynulovano) {
-                vynulovano = true;
-                startOrLap.setText("Start");
-                startOrLap.setEnabled(true);
-                stopOrReset.setEnabled(false);
-
-                timer.setText("00:00:00.00");
-                finishers = 0;
-                while (finishers != 3)
-                    tabulka.setValueAt("", finishers++, 1);
-                finishers = 0;
-
+                timer.setText(tabulka.getValueAt(cas - 1, 1).toString());
             }
-        }
-
-        frame.update(frame.getGraphics());
+        } 
     }
+    public void stopButton(ActionEvent e){
+        
 
+        if (bezi) {
+            bezi = false;
+            timer.setText(tabulka.getValueAt(cas - 1, 1).toString());
+        } 
+    }
+    public void resetButton(ActionEvent e){
+        
+            if (!vynulovano) {
+            vynulovano = true;
+            timer.setText("00:00:00.00");
+            cas = 0;
+            while (cas != 3)
+                tabulka.setValueAt("", cas++, 1);
+            cas = 0;
+
+        }
+    }
+    
     public String getTime() {
         int diff = (int) (System.currentTimeMillis() - timeBegin);
         int hour = diff / (1000 * 60 * 60);
@@ -126,11 +126,4 @@ public class Operace {
                 50
         );
     }
-
-    public void prepare(JComponent o) {
-        o.setVisible(true);
-        frame.add(o);
-    }
-
-
 }
