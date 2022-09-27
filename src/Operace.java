@@ -99,7 +99,7 @@ public class Operace {
 
         }
     }
-    
+
     public String getTime() {
         int diff = (int) (System.currentTimeMillis() - timeBegin);
         int hour = diff / (1000 * 60 * 60);
